@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest]
         arch: [amd64, 386]
 
     steps:
@@ -25,6 +25,20 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: 1.21.4
+
+    - name: Install Homebrew
+      if: matrix.os == 'macos-latest'
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    - name: Install Chocolatey
+      if: matrix.os == 'windows-latest'
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; `
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
     - name: Install GLFW
       if: matrix.os == 'ubuntu-latest'
