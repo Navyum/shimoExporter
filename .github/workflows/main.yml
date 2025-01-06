@@ -1,0 +1,40 @@
+name: Build Executables
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        arch: [amd64, 386]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.21.4
+
+    - name: Build
+      run: |
+        GOOS=$(echo ${{ matrix.os }} | sed 's/-latest//')
+        GOARCH=${{ matrix.arch }}
+        OUTPUT_NAME=shimoExporter-${GOOS}-${GOARCH}
+        go build -o $OUTPUT_NAME ./shimoExporter/app/main.go
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.os }}-${{ matrix.arch }}
+        path: shimoExporter-${{ matrix.os }}-${{ matrix.arch}} 
