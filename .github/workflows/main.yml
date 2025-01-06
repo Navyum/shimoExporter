@@ -31,7 +31,7 @@ jobs:
         GOOS=$(echo ${{ matrix.os }} | sed 's/-latest//')
         GOARCH=${{ matrix.arch }}
         OUTPUT_NAME=shimoExporter-${GOOS}-${GOARCH}
-        go mod init shimoExporter && go mod tidy && go build -o $OUTPUT_NAME ./shimoExporter/app/main.go
+        go mod init shimoExporter && go mod tidy && go build -o $OUTPUT_NAME ./app/main.go
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
