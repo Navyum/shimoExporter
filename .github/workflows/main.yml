@@ -55,7 +55,7 @@ jobs:
 
     - name: Build
       run: |
-        GOOS=$(echo ${{ matrix.os }} | sed 's/-latest//')
+        GOOS=$(echo ${{ matrix.os }})
         GOARCH=${{ matrix.arch }}
         OUTPUT_NAME=shimoExporter-${GOOS}-${GOARCH}
         export CGO_ENABLED=1 && go mod init shimoExporter && go mod tidy && go build -o $OUTPUT_NAME ./app/main.go
