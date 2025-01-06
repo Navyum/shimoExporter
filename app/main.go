@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"Navyum/shimoExporter/internal/pkg/shimo"
+	"github.com/Navyum/shimoExporter/pkg/shimo"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
