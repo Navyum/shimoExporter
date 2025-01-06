@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Navyum/shimoExporter/internal/pkg/shimo"
+	"github.com/Navyum/shimoExporter/pkg/shimo"
 	"flag"
 	"fmt"
 
