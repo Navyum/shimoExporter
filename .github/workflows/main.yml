@@ -60,7 +60,7 @@ jobs:
         OUTPUT_NAME=shimoExporter-${GOOS}-${GOARCH}
         export CGO_ENABLED=1 && go mod init shimoExporter && go mod tidy && go build -o $OUTPUT_NAME ./app/main.go
 
-- name: Code Sign (macOS)
+    - name: Code Sign (macOS)
       if: matrix.os == 'macos-latest'
       env:
         CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
