@@ -60,6 +60,39 @@ jobs:
         OUTPUT_NAME=shimoExporter-${GOOS}-${GOARCH}
         export CGO_ENABLED=1 && go mod init shimoExporter && go mod tidy && go build -o $OUTPUT_NAME ./app/main.go
 
+- name: Code Sign (macOS)
+      if: matrix.os == 'macos-latest'
+      env:
+        CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+        CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+      run: |
+        echo "$CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+        security create-keychain -p "" build.keychain
+        security import /tmp/certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+        codesign --keychain build.keychain --sign "Developer ID Application: Your Name (Team ID)" $OUTPUT_NAME
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: shimoExporter-${{ matrix.os }}-${{ matrix.arch }}
+        asset_name: shimoExporter-${{ matrix.os }}-${{ matrix.arch }}
+        asset_content_type: application/octet-stream
+
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
